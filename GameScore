@@ -1,0 +1,35 @@
+{
+  "name": "GameScore",
+  "type": "object",
+  "properties": {
+    "player_name": {
+      "type": "string",
+      "description": "Player's name or identifier"
+    },
+    "score": {
+      "type": "number",
+      "description": "Final score achieved"
+    },
+    "best_streak": {
+      "type": "number",
+      "description": "Longest combo streak in the game"
+    },
+    "level_reached": {
+      "type": "number",
+      "description": "Highest level/difficulty reached"
+    },
+    "gates_passed": {
+      "type": "number",
+      "description": "Total number of gates successfully passed"
+    },
+    "game_duration": {
+      "type": "number",
+      "description": "Game duration in seconds"
+    }
+  },
+  "required": [
+    "score",
+    "best_streak",
+    "level_reached"
+  ]
+}
