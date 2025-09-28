@@ -1,0 +1,94 @@
+import React, { useState } from 'react';
+import StartScreen from '../components/game/StartScreen';
+import GameScreen from '../components/game/GameScreen';
+import GameOverScreen from '../components/game/GameOverScreen';
+import HighScoresScreen from '../components/game/HighScoresScreen';
+import SettingsScreen from '../components/game/SettingsScreen';
+
+export default function ShapeShifter() {
+  const [gameState, setGameState] = useState('start'); // start, playing, gameOver, highScores, settings
+  const [gameStats, setGameStats] = useState({
+    score: 0,
+    streak: 1,
+    level: 1
+  });
+
+  const handleStartGame = () => {
+    setGameState('playing');
+  };
+
+  const handleGameOver = (finalScore, bestStreak, levelReached) => {
+    setGameStats({
+      score: finalScore,
+      streak: bestStreak,
+      level: levelReached
+    });
+    setGameState('gameOver');
+  };
+
+  const handleRestart = () => {
+    setGameState('playing');
+  };
+
+  const handleMainMenu = () => {
+    setGameState('start');
+  };
+
+  const handleShowHighScores = () => {
+    setGameState('highScores');
+  };
+
+  const handleShowSettings = () => {
+    setGameState('settings');
+  };
+
+  const handlePause = () => {
+    // Could implement pause screen, for now just go to main menu
+    setGameState('start');
+  };
+
+  // Render based on current game state
+  switch (gameState) {
+    case 'playing':
+      return (
+        <GameScreen 
+          onGameOver={handleGameOver}
+          onPause={handlePause}
+        />
+      );
+
+    case 'gameOver':
+      return (
+        <GameOverScreen 
+          finalScore={gameStats.score}
+          bestStreak={gameStats.streak}
+          levelReached={gameStats.level}
+          onRestart={handleRestart}
+          onMainMenu={handleMainMenu}
+        />
+      );
+
+    case 'highScores':
+      return (
+        <HighScoresScreen 
+          onBack={handleMainMenu}
+        />
+      );
+
+    case 'settings':
+      return (
+        <SettingsScreen 
+          onBack={handleMainMenu}
+        />
+      );
+
+    default:
+      return (
+        <StartScreen 
+          onStartGame={handleStartGame}
+          onShowHighScores={handleShowHighScores}
+          onShowSettings={handleShowSettings}
+        />
+      );
+  }
+}
