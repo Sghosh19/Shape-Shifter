@@ -1,0 +1,122 @@
+import React from 'react';
+
+const COLORS = {
+  red: '#ff0040',
+  blue: '#0080ff',
+  green: '#00ff00', 
+  yellow: '#ffff00'
+};
+
+export default function Gate({ requirements, position, width, height, isMatched, isFailed }) {
+  const { shape, color, symbol } = requirements;
+  
+  const gateColor = isMatched ? '#00ff00' : isFailed ? '#ff0040' : '#00ffff';
+  const glowIntensity = isMatched || isFailed ? 60 : 20;
+
+  const renderRequiredShape = () => {
+    const size = Math.min(width * 0.3, 40);
+    const shapeStyle = {
+      width: `${size}px`,
+      height: `${size}px`,
+      backgroundColor: color ? COLORS[color] : 'transparent',
+      border: `3px solid ${color ? COLORS[color] : '#ffffff'}`,
+      boxShadow: `0 0 15px ${color ? COLORS[color] : '#ffffff'}`,
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'center',
+      fontSize: `${size * 0.4}px`,
+      fontWeight: 'bold',
+      color: '#000'
+    };
+
+    if (shape === 'triangle') {
+      return (
+        <div style={{
+          width: 0,
+          height: 0,
+          borderLeft: `${size/2}px solid transparent`,
+          borderRight: `${size/2}px solid transparent`,
+          borderBottom: `${size * 0.87}px solid ${color ? COLORS[color] : '#ffffff'}`,
+          boxShadow: `0 0 15px ${color ? COLORS[color] : '#ffffff'}`,
+          position: 'relative',
+          display: 'flex',
+          alignItems: 'flex-end',
+          justifyContent: 'center'
+        }}>
+          {symbol && (
+            <span style={{ 
+              fontSize: `${size * 0.3}px`, 
+              color: '#000',
+              position: 'absolute',
+              bottom: `${size * 0.2}px`
+            }}>
+              {symbol}
+            </span>
+          )}
+        </div>
+      );
+    }
+
+    if (shape === 'star') {
+      return (
+        <div style={{ position: 'relative', width: `${size}px`, height: `${size}px` }}>
+          <svg width={size} height={size} viewBox="0 0 60 60">
+            <path
+              d="M30 5 L36 22 L54 22 L40 33 L46 50 L30 39 L14 50 L20 33 L6 22 L24 22 Z"
+              fill={color ? COLORS[color] : '#ffffff'}
+              stroke={color ? COLORS[color] : '#ffffff'}
+              strokeWidth="2"
+              style={{
+                filter: `drop-shadow(0 0 8px ${color ? COLORS[color] : '#ffffff'})`
+              }}
+            />
+          </svg>
+          {symbol && (
+            <span style={{ 
+              position: 'absolute',
+              top: '50%',
+              left: '50%',
+              transform: 'translate(-50%, -50%)',
+              fontSize: `${size * 0.25}px`,
+              color: '#000'
+            }}>
+              {symbol}
+            </span>
+          )}
+        </div>
+      );
+    }
+
+    return (
+      <div
+        className={shape === 'circle' ? 'rounded-full' : 'rounded-none'}
+        style={shapeStyle}
+      >
+        {symbol && symbol}
+      </div>
+    );
+  };
+
+  return (
+    <div
+      className="absolute flex items-center justify-center"
+      style={{
+        left: `${position.x}px`,
+        top: `${position.y}px`,
+        width: `${width}px`,
+        height: `${height}px`,
+        border: `4px solid ${gateColor}`,
+        borderRadius: '8px',
+        backgroundColor: 'rgba(0, 0, 0, 0.3)',
+        boxShadow: `
+          0 0 ${glowIntensity}px ${gateColor},
+          inset 0 0 20px rgba(0, 255, 255, 0.1)
+        `,
+        backdropFilter: 'blur(4px)',
+        transition: 'all 0.2s ease-out'
+      }}
+    >
+      {renderRequiredShape()}
+    </div>
+  );
+}
