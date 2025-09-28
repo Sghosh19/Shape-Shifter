@@ -1,0 +1,64 @@
+
+import React, { useState, useEffect, useCallback, useRef } from 'react';
+import { GameScore } from '@/entities/GameScore';
+import Orb from './Orb';
+import Gate from './Gate';
+import HUD from './HUD';
+
+const SHAPES = ['circle', 'square', 'triangle', 'star'];
+const COLORS = ['red', 'blue', 'green', 'yellow'];
+const SYMBOLS = ['1', '2', '3', '4', '5', '6', '7', '8', '9'];
+
+export default function GameScreen({ onGameOver, onPause }) {
+  const [gameState, setGameState] = useState({
+    score: 0,
+    streak: 1,
+    level: 1,
+    speed: 1, // Changed from 2 to 1
+    gates: [],
+    orbPosition: { x: 0, y: 0 },
+    isGameActive: true,
+    canSpawnNextGate: true
+  });
+
+  const [orbState, setOrbState] = useState({
+    shape: 'circle',
+    color: 'blue',
+    symbol: null,
+    isTransforming: false
+  });
+
+  const [touchStart, setTouchStart] = useState(null);
+  const gameLoopRef = useRef();
+  const gameContainerRef = useRef();
+  const [containerSize, setContainerSize] = useState({ width: 0, height: 0 });
+
+  // Initialize container size and orb position
+  useEffect(() => {
+    const updateSize = () => {
+      if (gameContainerRef.current) {
+        const rect = gameContainerRef.current.getBoundingClientRect();
+        setContainerSize({ width: rect.width, height: rect.height });
+        setGameState(prev => ({
+          ...prev,
+          orbPosition: { x: rect.width / 2 - 30, y: rect.height - 150 }
+        }));
+      }
+    };
+
+    updateSize();
+    window.addEventListener('resize', updateSize);
+    return () => window.removeEventListener('resize', updateSize);
+  }, []);
+
+  // Keyboard controls
+  useEffect(() => {
+    const handleKeyDown = (e) => {
+      if (!gameState.isGameActive) return;
+
+      const transformOrb = () => {
+        setOrbState(prev => ({ ...prev, isTransforming: true }));
+        setTimeout(() => {
+          setOrbState(prev => ({ ...prev, isTransforming: false }));
+        }, 200);
+ 
