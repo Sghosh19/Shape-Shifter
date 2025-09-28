@@ -1,0 +1,64 @@
+import React, { useState, useEffect } from 'react';
+import { GameScore } from '@/entities/GameScore';
+
+export default function GameOverScreen({ 
+  finalScore, 
+  bestStreak, 
+  levelReached, 
+  onRestart, 
+  onMainMenu 
+}) {
+  const [playerName, setPlayerName] = useState('');
+  const [isSubmitted, setIsSubmitted] = useState(false);
+  const [isNewHighScore, setIsNewHighScore] = useState(false);
+
+  useEffect(() => {
+    const checkIfHighScore = async () => {
+      try {
+        const scores = await GameScore.list('-score', 1);
+        if (scores.length === 0 || finalScore > scores[0].score) {
+          setIsNewHighScore(true);
+        }
+      } catch (error) {
+        console.error('Error checking high score:', error);
+      }
+    };
+
+    checkIfHighScore();
+  }, [finalScore]);
+
+  const handleSubmitScore = async () => {
+    if (playerName.trim() === '') {
+      setPlayerName('Anonymous');
+    }
+
+    try {
+      await GameScore.create({
+        player_name: playerName.trim() || 'Anonymous',
+        score: finalScore,
+        best_streak: bestStreak,
+        level_reached: levelReached,
+        gates_passed: Math.floor(finalScore / 10),
+        game_duration: 0 // Could be tracked if needed
+      });
+      setIsSubmitted(true);
+    } catch (error) {
+      console.error('Error saving score:', error);
+      setIsSubmitted(true); // Still allow restart even if save failed
+    }
+  };
+
+  return (
+    <div className="flex flex-col items-center justify-center min-h-screen bg-gradient-to-b from-red-900 via-black to-purple-900 px-4 relative overflow-hidden">
+      {/* Background effects */}
+      <div className="absolute inset-0 opacity-20">
+        <div className="absolute top-1/4 left-1/4 w-40 h-40 bg-red-400 rounded-full blur-3xl animate-pulse" />
+        <div className="absolute bottom-1/4 right-1/4 w-32 h-32 bg-purple-400 rounded-full blur-2xl animate-pulse" style={{ animationDelay: '1s' }} />
+      </div>
+
+      {/* Game Over Title */}
+      <div className="text-center mb-8 z-10">
+        <h1 className="text-5xl font-bold text-red-400 mb-2 animate-pulse">
+          Game Over
+        </h1>
+ 
