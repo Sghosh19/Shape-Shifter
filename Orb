@@ -1,0 +1,118 @@
+import React from 'react';
+
+const SHAPES = {
+  circle: 'rounded-full',
+  square: 'rounded-none',
+  triangle: 'rounded-none',
+  star: 'rounded-sm'
+};
+
+const COLORS = {
+  red: '#ff0040',
+  blue: '#0080ff', 
+  green: '#00ff00',
+  yellow: '#ffff00'
+};
+
+const SYMBOLS = ['1', '2', '3', '4', '5', '6', '7', '8', '9'];
+
+export default function Orb({ shape, color, symbol, position, isTransforming }) {
+  const renderShape = () => {
+    const baseStyle = {
+      width: '60px',
+      height: '60px',
+      backgroundColor: COLORS[color],
+      boxShadow: `0 0 20px ${COLORS[color]}, 0 0 40px ${COLORS[color]}, 0 0 60px ${COLORS[color]}`,
+      border: `2px solid ${COLORS[color]}`,
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'center',
+      fontSize: '24px',
+      fontWeight: 'bold',
+      color: '#000',
+      transition: isTransforming ? 'all 0.2s ease-out' : 'all 0.1s ease-out',
+      transform: isTransforming ? 'scale(1.2)' : 'scale(1)'
+    };
+
+    if (shape === 'triangle') {
+      return (
+        <div
+          style={{
+            ...baseStyle,
+            backgroundColor: 'transparent',
+            width: 0,
+            height: 0,
+            borderLeft: `30px solid transparent`,
+            borderRight: `30px solid transparent`,
+            borderBottom: `52px solid ${COLORS[color]}`,
+            boxShadow: `0 0 20px ${COLORS[color]}, 0 0 40px ${COLORS[color]}`,
+            display: 'flex',
+            alignItems: 'flex-end',
+            justifyContent: 'center',
+            paddingBottom: '8px'
+          }}
+        >
+          {symbol && <span style={{ fontSize: '16px', color: '#000', marginBottom: '-35px' }}>{symbol}</span>}
+        </div>
+      );
+    }
+
+    if (shape === 'star') {
+      return (
+        <div
+          style={{
+            ...baseStyle,
+            backgroundColor: 'transparent',
+            position: 'relative'
+          }}
+        >
+          <svg width="60" height="60" viewBox="0 0 60 60">
+            <path
+              d="M30 5 L36 22 L54 22 L40 33 L46 50 L30 39 L14 50 L20 33 L6 22 L24 22 Z"
+              fill={COLORS[color]}
+              stroke={COLORS[color]}
+              strokeWidth="2"
+              style={{
+                filter: `drop-shadow(0 0 10px ${COLORS[color]})`
+              }}
+            />
+          </svg>
+          {symbol && (
+            <span style={{ 
+              position: 'absolute', 
+              fontSize: '16px', 
+              color: '#000',
+              top: '50%',
+              left: '50%',
+              transform: 'translate(-50%, -50%)'
+            }}>
+              {symbol}
+            </span>
+          )}
+        </div>
+      );
+    }
+
+    return (
+      <div
+        className={SHAPES[shape]}
+        style={baseStyle}
+      >
+        {symbol && symbol}
+      </div>
+    );
+  };
+
+  return (
+    <div 
+      className="absolute transition-all duration-100"
+      style={{
+        left: `${position.x}px`,
+        top: `${position.y}px`,
+        zIndex: 10
+      }}
+    >
+      {renderShape()}
+    </div>
+  );
+}
